@@ -1,6 +1,6 @@
 from functions import *
 import time
-import datatime
+import datetime
 
 print ("Starting data pipeline at ", datetime.datetime.now().striftime('%Y-%m-%d %H:%M:%S'))
 print("------------------------------------")
