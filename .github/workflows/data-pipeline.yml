@@ -4,7 +4,9 @@ on:
   # push: # uncomment to run on push
   schedule:
     #- cron: "35 0 * * *" # run every day at 12:35AM
-    - cron: "50 21 * * *" # run every day at 9:50PM
+    #- cron: "50 21 * * *" # run every day at 9:50PM
+    - cron: "59 3 * * *"  # Para 9:50 p.m. UTC-6 (Costa Rica)
+
   workflow_dispatch:  # manual triggers
 
 jobs:
