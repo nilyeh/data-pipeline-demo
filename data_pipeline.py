@@ -10,7 +10,7 @@ t0: time.time()
 getVideoIDs()
 t1 = time.time()
 print ("Step 1:Done")
-print ("----> Video IDs downloaded in", str(t1-t0), "seconds", "\n" ")
+print ("----> Video IDs downloaded in", str(t1-t0), "seconds", "\n")
 
 
 #Step 2: Extract transcriptions for videos 
