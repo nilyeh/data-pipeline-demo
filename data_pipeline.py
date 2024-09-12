@@ -2,7 +2,7 @@ from functions import *
 import time
 import datetime
 
-print ("Starting data pipeline at ", datetime.datetime.now().striftime('%Y-%m-%d %H:%M:%S'))
+print ("Starting data pipeline at ", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 print("------------------------------------")
 
 #Step 1: Extract videos IDs
