@@ -1,0 +1,89 @@
+name: data-pipeline-workflow
+
+on:
+  # push: # uncomment to run on push
+  schedule:
+    - cron: "35 0 * * *" # run every day at 12:35AM
+  workflow_dispatch:  # manual triggers
+
+jobs:
+  run-data-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo content
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Use the PAT instead of the default GITHUB_TOKEN
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run data pipeline
+        env:
+          YT_API_KEY: ${{ secrets.YT_API_KEY }} # import API key
+        run: python data_pipeline.py # run data pipeline
+      - name: Check for changes # create env variable indicating if any changes were made
+        id: git-check
+        run: |
+          git config user.name 'github-actions'
+          git config user.email 'github-actions@github.com'
+          git add .
+          git diff --staged --quiet || echo "changes=true" >> $GITHUB_ENV 
+      - name: Commit and push if changes
+        if: env.changes == 'true' # if changes made push new data to repo
+        run: |
+          git commit -m "updated video index"
+          git push
+
+
+# Este archivo define un flujo de trabajo automatizado (workflow) en GitHub Actions.
+# El workflow ejecuta un pipeline de datos en Python de manera programada o manual,
+# verifica si hay cambios en los datos procesados y, si los hay, los sube al repositorio.
+
+# 1. name: data-pipeline-workflow
+# - Asigna el nombre "data-pipeline-workflow" al flujo de trabajo.
+
+# 2. on:
+# - schedule: Define cuándo se ejecutará el workflow automáticamente.
+#   - "35 0 * * *": Se ejecuta diariamente a las 12:35 AM UTC.
+# - workflow_dispatch: Permite ejecutar el flujo de trabajo manualmente desde la interfaz de GitHub.
+
+# 3. jobs:
+# - run-data-pipeline: Es el trabajo que define los pasos para ejecutar el pipeline. 
+#   Se ejecuta en un entorno Ubuntu.
+
+# 4. steps:
+
+#   a. Checkout repo content
+#   - Descarga el contenido del repositorio usando actions/checkout@v4.
+#   - Usa un Personal Access Token (PAT) en lugar del GITHUB_TOKEN para permitir permisos adicionales.
+
+#   b. Setup Python
+#   - Configura el entorno con Python 3.9 usando actions/setup-python@v5.
+#   - Activa la caché de pip para acelerar futuras ejecuciones.
+
+#   c. Install dependencies
+#   - Instala las dependencias listadas en el archivo requirements.txt usando pip.
+
+#   d. Run data pipeline
+#   - Ejecuta el script data_pipeline.py.
+#   - Se usa una clave de la API de YouTube almacenada como secreto en GitHub (secrets.YT_API_KEY).
+
+#   e. Check for changes
+#   - Verifica si hubo cambios en los archivos después de ejecutar el pipeline.
+#   - Si los hubo, agrega "changes=true" a las variables de entorno.
+
+#   f. Commit and push if changes
+#   - Si se detectaron cambios, realiza un commit con el mensaje "updated video index" 
+#     y hace un push al repositorio.
+
+# Resumen del Flujo:
+# 1. El flujo se ejecuta automáticamente a las 12:35 AM o manualmente.
+# 2. Se clona el repositorio.
+# 3. Se configura Python con la versión 3.9 y se instalan las dependencias.
+# 4. Se ejecuta el pipeline de datos.
+# 5. Se verifica si los datos procesados han cambiado.
+# 6. Si hubo cambios, se suben al repositorio con un commit.
